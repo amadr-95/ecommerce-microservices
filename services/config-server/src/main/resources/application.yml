@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: native
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          # under this folder we need to create a configuration yml file with the same spring.application.name as in
+          # application.yml for each service, and this will be the configuration to fetch
+          search-locations: classpath:/configurations
+
+server:
+  port: 8888 # port where this server runs
