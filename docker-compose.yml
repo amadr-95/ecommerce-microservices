@@ -1,0 +1,53 @@
+services:
+  postgres:
+    container_name: ms-postgres-db
+    image: postgres
+    environment:
+      POSTGRES_USER: amador
+      POSTGRES_PASSWORD: amador
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  mongo:
+    container_name: ms-mongo-db
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: amador
+      MONGO_INITDB_ROOT_PASSWORD: amador
+    volumes:
+      - mongo:/data
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    container_name: ms-mongo-express
+    image: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: amador
+      ME_CONFIG_MONGODB_ADMINPASSWORD: amador
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH: false
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+  maildev:
+    container_name: ms-maildev
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  postgres:
+  mongo:
