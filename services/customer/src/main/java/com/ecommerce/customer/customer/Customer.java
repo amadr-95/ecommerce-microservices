@@ -19,8 +19,8 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 public class Customer {
     @Id
     @SequenceGenerator(
-            name = "customer_id_sequence",
-            sequenceName = "customer_id_sequence",
+            name = "customer_sequence",
+            sequenceName = "customer_sequence",
             allocationSize = 1
     )
     @GeneratedValue(

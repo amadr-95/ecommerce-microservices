@@ -1,6 +1,8 @@
-##############################################
-# config for customer microservice (db config)
-##############################################
+###################################
+# config for customer microservice
+###################################
+
+# DB config
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/customer
@@ -14,3 +16,11 @@ spring:
           dialect: org.hibernate.dialect.PostgreSQLDialect
           format_sql: true
       show-sql: true
+
+# Swagger config
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+openapi:
+  dev:
+    url: http://localhost:8080
