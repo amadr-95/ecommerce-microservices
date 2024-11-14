@@ -24,6 +24,8 @@ services:
       - mongo:/data
     ports:
       - "27017:27017"
+    networks:
+      - microservices-network
 
   mongo-express:
     container_name: ms-mongo-express
@@ -35,6 +37,8 @@ services:
       ME_CONFIG_BASICAUTH: false
     ports:
       - "8081:8081"
+    networks:
+      - microservices-network
     restart: unless-stopped
 
   maildev:
@@ -43,6 +47,8 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
+    networks:
+      - microservices-network
 
 networks:
   microservices-network:
