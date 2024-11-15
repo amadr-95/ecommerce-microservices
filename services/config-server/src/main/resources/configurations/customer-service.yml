@@ -35,9 +35,12 @@ spring:
 
 # Swagger config
 springdoc:
+  api-docs:
+    path: /customer-docs
   swagger-ui:
     path: /customer-api
     operations-sorter: method
+
 # custom property
 openapi:
   dev:

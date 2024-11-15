@@ -31,5 +31,5 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String email;
-    private String address;
+    private String address; //todo: create a separate class for Address
 }

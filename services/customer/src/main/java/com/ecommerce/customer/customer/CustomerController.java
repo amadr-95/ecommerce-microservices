@@ -26,26 +26,12 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    //todo: move this to openapi.yml file to keep controller clean
     @Operation(
-            summary = "Creates a new customer",
-            description = "Given a valid CustomerRequest is mapped to a Customer entity and stored in the database",
+            summary = "Create a new customer",
+            description = "Given a valid CustomerRequest, it is mapped to a Customer entity and stored in the database",
             responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            content = {
-                                    @Content(schema = @Schema(implementation = CustomerRequest.class), mediaType = "text/plain")
-                            }),
-                    @ApiResponse(
-                            responseCode = "400",
-                            content = {
-                                    @Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")
-                            }),
-                    @ApiResponse(
-                            responseCode = "500",
-                            content = {
-                                    @Content(schema = @Schema())
-                            })
+                    @ApiResponse(responseCode = "201", description = "Customer created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
     @PostMapping
@@ -54,6 +40,15 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.createCustomer(customerRequest), CREATED);
     }
 
+    @Operation(
+            summary = "Update a customer",
+            description = "Given a valid CustomerRequest, it updates an existing Customer",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Customer updated successfully"),
+                    @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content(schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     @PutMapping
     public ResponseEntity<?> updateCustomer(
             @RequestBody @Valid @NotNull(message = "request cannot be null") CustomerRequest customerRequest) throws CustomerNotFoundException {
@@ -61,21 +56,52 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "Retrieve all customers",
+            description = "Retrieves a list of all customers in the database",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Customers retrieved successfully")
+            }
+    )
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> findAllCustomers() {
         return new ResponseEntity<>(customerService.findAll(), OK);
     }
 
+    @Operation(
+            summary = "Check if a customer exists",
+            description = "Checks if a customer exists in the database by their ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Customer exists"),
+                    @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     @GetMapping(path = "/exists/{customerId}")
     public ResponseEntity<Boolean> existsById(@PathVariable @NotNull Integer customerId) {
         return new ResponseEntity<>(customerService.existById(customerId), OK);
     }
 
+    @Operation(
+            summary = "Find a customer by ID",
+            description = "Retrieves a customer from the database by their ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Customer found", content = @Content(schema = @Schema(implementation = CustomerResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     @GetMapping(path = "/find/{customerId}")
     public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable @NotNull Integer customerId) throws CustomerNotFoundException {
         return new ResponseEntity<>(customerService.findCustomerById(customerId), OK);
     }
 
+    @Operation(
+            summary = "Delete a customer by ID",
+            description = "Deletes a customer from the database by their ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Customer deleted"),
+                    @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     @DeleteMapping(path = "/delete/{customerId}")
     public ResponseEntity<?> deleteCustomerById(@PathVariable @NotNull Integer customerId) {
         customerService.deleteById(customerId);
