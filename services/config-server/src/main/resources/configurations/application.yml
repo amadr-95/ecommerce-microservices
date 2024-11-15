@@ -1,0 +1,17 @@
+###################################
+# Default config for all services
+###################################
+# All the other services will inherit first from this one
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:8761/eureka
+
+# Prevent overriding properties specified in the application.yml file within the services themselves
+# (all configurations must be fetched from the config-server)
+spring:
+  cloud:
+    config:
+      override-system-properties: false
