@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS customer
+(
+    id       INTEGER     NOT NULL PRIMARY KEY,
+    firstname VARCHAR(25) NOT NULL,
+    lastname VARCHAR(25) NOT NULL,
+    email VARCHAR(25) NOT NULL,
+    address VARCHAR(50) NOT NULL
+);
+
+CREATE SEQUENCE IF NOT EXISTS customer_sequence INCREMENT BY 1;

@@ -13,12 +13,25 @@ spring:
     password: amador
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  flyway:
+    # Enables baseline migration on application startup
+    baseline-on-migrate: true
+    # Activates Flyway
+    enabled: true
+    # Description of the baseline migration
+    baseline-description: "init"
+    # Version of the baseline migration
+    baseline-version: 0
+    # User for Flyway connection
+    user: ${spring.datasource.username}
+    # Password for Flyway connection
+    password: ${spring.datasource.password}
 
 # Swagger config
 springdoc:
