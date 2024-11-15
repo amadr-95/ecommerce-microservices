@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS category(
+    id INTEGER NOT NULL PRIMARY KEY,
+    category VARCHAR(25) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS product (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    available_quantity INTEGER DEFAULT 0,
+    price NUMERIC (38, 2),
+    category_id INTEGER CONSTRAINT fk_category_id REFERENCES category(id)
+);
+
+CREATE SEQUENCE IF NOT EXISTS category_sequence INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS product_sequence INCREMENT BY 1;

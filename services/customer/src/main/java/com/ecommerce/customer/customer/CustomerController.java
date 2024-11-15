@@ -81,4 +81,5 @@ public class CustomerController {
         customerService.deleteById(customerId);
         return ResponseEntity.ok().build();
     }
+    //todo: implement more endpoints i.e search for name, etc
 }

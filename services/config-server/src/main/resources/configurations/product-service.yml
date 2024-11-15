@@ -1,0 +1,35 @@
+#################################
+# config for product microservice
+#################################
+
+server:
+  port: 8081
+
+# DB config
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5332/product
+    username: amador
+    password: amador
+  jpa:
+    hibernate:
+      ddl-auto: validate # flyway creates the schema for us
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  # Flyway configuration for database migration
+  flyway:
+    # Enables baseline migration on application startup
+    baseline-on-migrate: true
+    # Activates Flyway
+    enabled: true
+    # Description of the baseline migration
+    baseline-description: "init"
+    # Version of the baseline migration
+    baseline-version: 0
+    # User for Flyway connection
+    user: ${spring.datasource.username}
+    # Password for Flyway connection
+    password: ${spring.datasource.password}
