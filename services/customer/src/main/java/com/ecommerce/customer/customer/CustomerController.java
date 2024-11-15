@@ -26,14 +26,15 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    //todo: move this to openapi.yml file to keep controller clean
     @Operation(
             summary = "Creates a new customer",
             description = "Given a valid CustomerRequest is mapped to a Customer entity and stored in the database",
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
+                            responseCode = "201",
                             content = {
-                                    @Content(schema = @Schema(implementation = CustomerRequest.class), mediaType = "application/json")
+                                    @Content(schema = @Schema(implementation = CustomerRequest.class), mediaType = "text/plain")
                             }),
                     @ApiResponse(
                             responseCode = "400",

@@ -22,7 +22,7 @@ public class CustomerService {
                 .orElseThrow(() -> new CustomerNotFoundException(
                         String.format("Customer with ID::%s can not be found", customerRequest.id())
                 ));
-        //update customer values (supposed valid ones)
+        //update customer values (supposed valid ones validated in Controller layer)
         customer.setFirstName(customerRequest.firstName());
         customer.setLastName(customerRequest.lastName());
         customer.setEmail(customerRequest.email());

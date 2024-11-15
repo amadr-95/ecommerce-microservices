@@ -2,6 +2,9 @@
 # config for customer microservice
 ###################################
 
+server:
+  port: 8080
+
 # DB config
 spring:
   datasource:
@@ -20,7 +23,9 @@ spring:
 # Swagger config
 springdoc:
   swagger-ui:
+    path: /customer-api
     operations-sorter: method
+# custom property
 openapi:
   dev:
-    url: http://localhost:8080
+    url: http://localhost:${server.port}
