@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotNull;
 
 public record CustomerRequest(
         Integer id,
-        @NotNull(message = "firstName can not be null")
+        @NotNull(message = "firstName cannot be null")
         String firstName,
-        @NotNull(message = "lastName can not be null")
+        @NotNull(message = "lastName cannot be null")
         String lastName,
-        @NotNull(message = "email can not be null")
-        @Email(message = "email is not a valid email address")
+        @NotNull(message = "email cannot be null")
+        @Email(message = "email provided is not a valid email address")
         String email,
-        @NotNull(message = "address can not be null")
+        @NotNull(message = "address cannot be null")
         String address
 ) {
 }
