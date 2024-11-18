@@ -1,8 +1,11 @@
 package com.ecommerce.customer.customer;
 
 
+import com.ecommerce.customer.address.Address;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.Set;
 
 public record CustomerRequest(
         Integer id,
@@ -14,6 +17,6 @@ public record CustomerRequest(
         @Email(message = "email provided is not a valid email address")
         String email,
         @NotNull(message = "address cannot be null")
-        String address
+        Set<Address> addresses
 ) {
 }

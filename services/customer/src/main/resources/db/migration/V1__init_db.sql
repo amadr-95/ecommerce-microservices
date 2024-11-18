@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS customer
 (
     id       INTEGER     NOT NULL PRIMARY KEY,
-    firstname VARCHAR(25) NOT NULL,
-    lastname VARCHAR(25) NOT NULL,
+    first_name VARCHAR(25) NOT NULL,
+    last_name VARCHAR(25) NOT NULL,
     email VARCHAR(25) NOT NULL,
     address VARCHAR(50) NOT NULL
 );

@@ -1,21 +1,21 @@
 package com.ecommerce.customer.customer;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.ecommerce.customer.address.Address;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.Set;
+
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Setter
+@Getter
+@ToString
 public class Customer {
     @Id
     @SequenceGenerator(
@@ -31,5 +31,7 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String email;
-    private String address; //todo: create a separate class for Address
+    @OneToMany(mappedBy = "customer", cascade = {MERGE, REMOVE})
+    @ToString.Exclude
+    private Set<Address> addresses;
 }

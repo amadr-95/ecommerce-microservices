@@ -26,7 +26,7 @@ public class CustomerService {
         customer.setFirstName(customerRequest.firstName());
         customer.setLastName(customerRequest.lastName());
         customer.setEmail(customerRequest.email());
-        customer.setAddress(customerRequest.address());
+        customer.setAddresses(customerRequest.addresses());
         customerRepository.save(customer);
     }
 
