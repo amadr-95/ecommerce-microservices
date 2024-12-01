@@ -2,10 +2,7 @@ package com.ecommerce.product.category;
 
 import com.ecommerce.product.product.Product;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,7 +13,9 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
+@ToString
 public class Category {
     @Id
     @SequenceGenerator(
@@ -31,6 +30,7 @@ public class Category {
     private Integer id;
     private String category;
     @OneToMany(mappedBy = "category", cascade = {MERGE, REMOVE}) //when updating or removing a category the changes will be reflected in Product entity
+    @ToString.Exclude
     private List<Product> products;
 
 }
