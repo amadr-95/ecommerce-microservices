@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/v1/customers")
@@ -65,7 +64,7 @@ public class CustomerController {
     )
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> findAllCustomers() {
-        return new ResponseEntity<>(customerService.findAll(), OK);
+        return ResponseEntity.ok(customerService.findAll());
     }
 
     @Operation(
@@ -78,7 +77,7 @@ public class CustomerController {
     )
     @GetMapping(path = "/exists/{customerId}")
     public ResponseEntity<Boolean> existsById(@PathVariable @NotNull Integer customerId) {
-        return new ResponseEntity<>(customerService.existById(customerId), OK);
+        return ResponseEntity.ok(customerService.existById(customerId));
     }
 
     @Operation(
@@ -91,7 +90,7 @@ public class CustomerController {
     )
     @GetMapping(path = "/find/{customerId}")
     public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable @NotNull Integer customerId) throws CustomerNotFoundException {
-        return new ResponseEntity<>(customerService.findCustomerById(customerId), OK);
+        return ResponseEntity.ok(customerService.findCustomerById(customerId));
     }
 
     @Operation(
