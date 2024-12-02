@@ -1,0 +1,32 @@
+###################################
+# config for order microservice
+###################################
+
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5232/order
+    username: amador
+    password: amador
+  jpa:
+    hibernate:
+      ddl-auto: validate # flyway creates the schema for us
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+application:
+  config:
+    # url to connect to customer microservice
+    # NOTE: we can connect to customer microservice directly using its address and port since all
+    # the services are in the same private network. However, that is not a good practice because when the services
+    # need to be scaled, many instances are generated and ports are randomly generated. We have two options to approach this:
+    # 1- Since each service will be registered in the config-server, we can fetch the url from there.
+    # 2- Use the API Gateway (recommended, it also includes a load balancer)
+    customer-url: http://localhost:8222/customers # for now, to test it out
+    product-url: http://localhost:8222/products
+    # API Gateway port: 8222
