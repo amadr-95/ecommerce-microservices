@@ -1,59 +1,94 @@
 services:
-  postgres:
-    container_name: ms-postgres-db
+  postgres-customer:
+    container_name: postgres-customer-db
     image: postgres
     environment:
       POSTGRES_USER: amador
       POSTGRES_PASSWORD: amador
+      POSTGRES_DB: customer # creates database customer by default (psql -U amador -d customer)
       PGDATA: /data/postgres
     volumes:
-      - postgres:/data/postgres
+      - postgres-customer:/data/postgres
     ports:
-      - "5432:5432"
+      - "5432:5432" # machine_port:container_port
     networks:
       - microservices-network
     restart: unless-stopped
 
-  mongo:
-    container_name: ms-mongo-db
-    image: mongo
+  postgres-product:
+    container_name: postgres-product-db
+    image: postgres
     environment:
-      MONGO_INITDB_ROOT_USERNAME: amador
-      MONGO_INITDB_ROOT_PASSWORD: amador
+      POSTGRES_USER: amador
+      POSTGRES_PASSWORD: amador
+      POSTGRES_DB: product
+      PGDATA: /data/postgres
     volumes:
-      - mongo:/data
+      - postgres-product:/data/postgres
     ports:
-      - "27017:27017"
-    networks:
-      - microservices-network
-
-  mongo-express:
-    container_name: ms-mongo-express
-    image: mongo-express
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: amador
-      ME_CONFIG_MONGODB_ADMINPASSWORD: amador
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_BASICAUTH: false
-    ports:
-      - "8081:8081"
+      - "5332:5432"
     networks:
       - microservices-network
     restart: unless-stopped
 
-  maildev:
-    container_name: ms-maildev
-    image: maildev/maildev
+  postgres-order:
+    container_name: postgres-order-db
+    image: postgres
+    environment:
+      POSTGRES_USER: amador
+      POSTGRES_PASSWORD: amador
+      POSTGRES_DB: order
+      PGDATA: /data/postgres
+    volumes:
+      - postgres-order:/data/postgres
     ports:
-      - "1080:1080"
-      - "1025:1025"
+      - "5232:5432"
     networks:
       - microservices-network
+    restart: unless-stopped
+
+#  mongo:
+#    container_name: ms-mongo-db
+#    image: mongo
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: amador
+#      MONGO_INITDB_ROOT_PASSWORD: amador
+#    volumes:
+#      - mongo:/data
+#    ports:
+#      - "27017:27017"
+#    networks:
+#      - microservices-network
+
+#  mongo-express:
+#    container_name: ms-mongo-express
+#    image: mongo-express
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: amador
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: amador
+#      ME_CONFIG_MONGODB_SERVER: mongo
+#      ME_CONFIG_BASICAUTH: false
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - microservices-network
+#    restart: unless-stopped
+
+#  maildev:
+#    container_name: ms-maildev
+#    image: maildev/maildev
+#    ports:
+#      - "1080:1080"
+#      - "1025:1025"
+#    networks:
+#      - microservices-network
 
 networks:
   microservices-network:
     driver: bridge
 
 volumes:
-  postgres:
-  mongo:
+  postgres-customer:
+  postgres-product:
+  postgres-order:
+#  mongo:

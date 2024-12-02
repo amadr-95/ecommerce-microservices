@@ -1,58 +1,91 @@
 # E-commerce App
 
+## Docker Compose
+The application includes the following services:
 
-## Docker compose
-Our app have the services below:
+- **postgres**: PostgreSQL database service. Uses the `postgres` image and stores data in a volume named `postgres`. The container's port 5432 is mapped to port 5432 on the host.
+- **mongo**: MongoDB database service. Uses the `mongo` image and stores data in a volume named `mongo`. The container's port 27017 is mapped to port 27017 on the host.
+- **mongo-express**: Web interface service for MongoDB. Uses the `mongo-express` image and connects to the `mongo` service. The container's port 8081 is mapped to port 8081 on the host.
+- **maildev**: SMTP and web server service for email testing. Uses the `maildev/maildev` image. The container's ports 1080 and 1025 are mapped to the same ports on the host.
 
-- postgres: Servicio de base de datos PostgreSQL. Utiliza la imagen `postgres` y almacena los datos en un volumen llamado `postgres`. El puerto 5432 del contenedor se mapea al puerto 5432 del host.
-- mongo: Servicio de base de datos MongoDB. Utiliza la imagen `mongo` y almacena los datos en un volumen llamado `mongo`. El puerto 27017 del contenedor se mapea al puerto 27017 del host.
-- mongo-express: Servicio de interfaz web para MongoDB. Utiliza la imagen `mongo-express` y se conecta al servicio `mongo`. El puerto 8081 del contenedor se mapea al puerto 8081 del host.
-- maildev: Servicio de servidor SMTP y web para pruebas de correo electrónico. Utiliza la imagen `maildev/maildev`. Los puertos 1080 y 1025 del contenedor se mapean a los mismos puertos en el host.
 
 ## Microservices
-### config-server
-Este microservicio actúa como un servidor de configuración centralizado, proporcionando configuraciones al resto de microservicios. Usa la anotación `@EnableConfigServer` 
-y las configuraciones para cada servicio se alojan en el path `resources/configurations` como se indica en el archivo `application.yml`.  
-Dependencies:
-- Config server: habilita el servidor para proporcionar configuraciones al resto de microservices
+This application is built under a monorepo system. Services need to be executed in order to run properly and for that reason 
+the easiest way is to execute `start_microservices.sh` file.
 
-### discovery-server
-Este microservicio actúa como un servidor de descubrimiento, permitiendo que otros microservicios se registren y descubran entre sí. Utiliza la anotacion `@EnableEurekaServer`
-de Eureka de Spring Cloud para gestionar el registro y descubrimiento de servicios.  
-Dependencies:
-- Config client: cliente que permite conectarse al config-server y extraer toda la configuracion 
-- Eureka server: habilita el servidor de registro y descubrimiento de servicios. **NOTE:** discovery (Eureka) server does not have to register itself, that's why we need to provide this config under `resources/configurations/discovery-service.yml` in config-server service:
+All the services that have a database will use `Flyway` for database migration. This requires this structure of folders under resources:
+```
+resources
+| - db
+    | - migration
+```  
+The file inside this folder requires a specific name such as `V1__name.sql`.
+> [!NOTE]
+> Flyway dependency is the best approach when it comes to use databases in real production environments.
+> It is advisable not to delegate database management to the application itself (create-drop, etc.)
+> Every time you make some structural changes in your database changing code you need to provide the proper script
+> that matches with those changes in order to `validate` the schema, otherwise application will not run dur to this discrepancy.
+
+### Configuration Server Service (`config-server`)
+This microservice acts like a centralized configuration server that provides the configuration for the rest of the services.
+Uses `@EnableConfigServer` annotation to enable the server and the configuration for each service is stored in `resources/configurations` path, as indicated in [`application.yml`](services/config-server/src/main/resources/application.yml)🔗 file.  
+Service runs on `http://localhost:8888`.
+
+### Discovery Server Service (`discovery-server`)
+This microservice acts like a discovery server, allowing other services to register and discover between them. It uses `@EnableEurekaServer` annotation
+from Spring Cloud Eureka to manage the registry and discover of the services.  
+Service runs on `http://localhost:8761`.
+> [!NOTE]
+> Discovery server does not have to register itself, that's why we need to provide this config in [`discovery-service.yml`](services/config-server/src/main/resources/configurations/discovery-service.yml)🔗 in config-server service
 ```yaml
-  eureka:
-    instance:
-      hostname: localhost
-    client:
-      register-with-eureka: false 
-      fetch-registry: false
-      service-url:
-        defaultZone: http://${eureka.instance.hostname}/${server.port}/eureka/
-  server:
-    port: 8761
- ```
-  This configuration ensures that discovery-server works properly without integrating itself within Eureka server (otherwise it will end up in a loop)
-### customer
-Microservicio encargado de gestionar la información de los clientes.  
+  register-with-eureka: false
+  fetch-registry: false
+```
+> This configuration ensures that discovery-server works properly without integrating itself within Eureka server (otherwise it will end up in a loop)
+
+### Customer service (`customer`)
+Microservice in charge of managing customer info. It uses Swagger for documenting the API (`http://localhost:8080/swagger-ui/index.html`).  
 Dependencies:
-- Config client: cliente que permite conectarse al config-server y extraer toda la configuracion
-- Eureka client: cliente que permite que customer microservice se registre en discovery (eureka) server
+- Config client: client that allows connecting to the `config-server` and fetching all the configuration
+- Eureka client: client that allows the customer microservice to register with the `discovery-server`
 - Spring web (REST API)
 - Lombok (avoid boilerplate)
+- JPA
 - Postgres (database of choice)
+- Flyway (database migration)
+- Validation (to perform field validations)
+- OpenAPI specification (Swagger) 
+
+####  CustomerController API Endpoints
+
+| HTTP Method | Endpoint                              | Description                                     | Input parameters                                               | Response                                 |
+|-------------|---------------------------------------|-------------------------------------------------|----------------------------------------------------------------|------------------------------------------|
+| POST        | /api/v1/customers                     | creates a new customer                          | `@RequestBody @Valid @NotNull CustomerRequest customerRequest` | `ResponseEntity<Integer>`                |
+| PUT         | /api/v1/customers                     | updates an existing customer                    | `@RequestBody @Valid @NotNull CustomerRequest customerRequest` | `ResponseEntity<?>`                      |
+| GET         | /api/v1/customers                     | retrieves all the customers                     | None                                                           | `ResponseEntity<List<CustomerResponse>>` |
+| GET         | /api/v1/customers/exists/{customerId} | verifies whether a customer exists by ID or not | `@PathVariable @NotNull Integer customerId`                    | `ResponseEntity<Boolean>`                |
+| GET         | /api/v1/customers/find/{customerId}   | retrieves a customer by ID                      | `@PathVariable @NotNull Integer customerId`                    | `ResponseEntity<CustomerResponse>`       |
+| DELETE      | /api/v1/customers/delete/{customerId} | deletes a customer by ID                        | `@PathVariable @NotNull Integer customerId`                    | `ResponseEntity<?>`                      |
+
+### Product service (`product`)
+Microservice in charge of managing product info. Service runs on `http://localhost:8081`.  
+Dependencies:
+- Config client: client that allows connecting to the `config-server` and fetching all the configuration
+- Eureka client: client that allows the customer microservice to register with the `discovery-server`
+- Spring web (REST API)
+- Lombok (avoid boilerplate)
+- JPA
+- Postgres (database of choice)
+- Flyway (database migration)
 - Validation (to perform field validations)
 
-##  CustomerController API Endpoints
+####  ProductController API Endpoints
 
-| Método HTTP | Endpoint                              | Descripción                           | Parámetros de entrada                                          | Respuesta                                |
-|-------------|---------------------------------------|---------------------------------------|----------------------------------------------------------------|------------------------------------------|
-| POST        | /api/v1/customers                     | Crear un nuevo cliente                | `@RequestBody @Valid @NotNull CustomerRequest customerRequest` | `ResponseEntity<Integer>`                |
-| PUT         | /api/v1/customers                     | Actualizar un cliente existente       | `@RequestBody @Valid @NotNull CustomerRequest customerRequest` | `ResponseEntity<?>`                      |
-| GET         | /api/v1/customers                     | Obtener todos los clientes            | Ninguno                                                        | `ResponseEntity<List<CustomerResponse>>` |
-| GET         | /api/v1/customers/exists/{customerId} | Verificar si un cliente existe por ID | `@PathVariable @NotNull Integer customerId`                    | `ResponseEntity<Boolean>`                |
-| GET         | /api/v1/customers/find/{customerId}   | Obtener un cliente por ID             | `@PathVariable @NotNull Integer customerId`                    | `ResponseEntity<CustomerResponse>`       |
-| DELETE      | /api/v1/customers/delete/{customerId} | Eliminar un cliente por ID            | `@PathVariable @NotNull Integer customerId`                    | `ResponseEntity<?>`                      |
+| HTTP Method | Endpoint                            | Description                                    | Input parameters                                                               | Response                                        |
+|-------------|-------------------------------------|------------------------------------------------|--------------------------------------------------------------------------------|-------------------------------------------------|
+| POST        | /api/v1/products                    | creates a new product                          | `@RequestBody @Valid @NotNull ProductRequest productRequest`                   | `ResponseEntity<Integer>`                       |
+| POST        | /api/v1/products/purchase           | creates a list of products to purchase         | `@RequestBody @Valid @NotNull List<ProductPurchaseRequest> productListRequest` | `ResponseEntity<List<ProductPurchaseResponse>>` |
+| GET         | /api/v1/products/find/{productId}   | retrieves a product by ID                      | `@PathVariable @NotNull Integer productId`                                     | `ResponseEntity<ProductResponse>`               |
+| GET         | /api/v1/products                    | retrieves all the products                     | None                                                                           | `ResponseEntity<List<ProductResponse>>`         |
+| DELETE      | /api/v1/products/delete/{productId} | deletes a product by ID                        | `@PathVariable @NotNull Integer productId`                                     | `ResponseEntity<?>`                             |
 
